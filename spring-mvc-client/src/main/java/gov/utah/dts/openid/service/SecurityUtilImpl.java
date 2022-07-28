@@ -28,7 +28,7 @@ public class SecurityUtilImpl implements SecurityUtil{
 	/** The audit service. */
 	@Autowired
 	private AuditService auditService;
-	
+
 	/* (non-Javadoc)
 	 * @see gov.utah.lfa.service.SecurityUtil#getActiveUser()
 	 */
@@ -38,15 +38,15 @@ public class SecurityUtilImpl implements SecurityUtil{
 		Object principal = authentication.getPrincipal();
 		return (AppUserDetails) principal;
 	}
-	
 
-	 
+
+
 	 /* (non-Javadoc)
  	 * @see gov.utah.lfa.service.SecurityUtil#logout(javax.servlet.http.HttpServletRequest)
  	 */
  	public void logout(HttpServletRequest request){
 		 	AppUserDetails user = getActiveUser();
-		    auditService.createAuditRow(new Date(),user,"","MEMBER",user.getUsername(),"",auditService.getTransaction(),Audit.ACTION_LOGOUT,null,user.getId().toString());
+		    auditService.createAuditRow(new Date(),user,"","MEMBER",user.getUmdEmail(),"",auditService.getTransaction(),Audit.ACTION_LOGOUT,null,user.getId().toString());
 			SecurityContextHolder.getContext().setAuthentication(null);
 			request.getSession().invalidate();
 			return;
@@ -58,11 +58,11 @@ public class SecurityUtilImpl implements SecurityUtil{
 	public  boolean hasRole(String role, AppUserDetails userDetails) {
 		    boolean hasRole = false;
 		    if (userDetails != null) {
-		      Collection<GrantedAuthority> authorities = userDetails.getAuthorities();
+				Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 		      if (isRolePresent(authorities, role)) {
 		        hasRole = true;
 		      }
-		    } 
+		    }
 		    return hasRole;
 		  }
 
@@ -73,7 +73,7 @@ public class SecurityUtilImpl implements SecurityUtil{
 	 * @param role required authority
 	 * @return true if role is present in list of authorities assigned to current user, false otherwise
 	 */
-	  private boolean isRolePresent(Collection<GrantedAuthority> authorities, String role) {
+	  private boolean isRolePresent(Collection<? extends GrantedAuthority> authorities, String role) {
 	    boolean isRolePresent = false;
 	    for (GrantedAuthority grantedAuthority : authorities) {
 	      isRolePresent = grantedAuthority.getAuthority().equals(role);
@@ -82,7 +82,7 @@ public class SecurityUtilImpl implements SecurityUtil{
 	    return isRolePresent;
 	  }
 
-	 
-	  
-	
+
+
+
 }

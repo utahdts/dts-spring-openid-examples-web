@@ -30,18 +30,16 @@
         <spring.version>5.3.22</spring.version>
         <jpa.version>1.0.2.Final</jpa.version>
         <junit.version>4.12</junit.version>
-        <hibernate.version>5.4.5.Final</hibernate.version>
+        <hibernate.version>5.6.9.Final</hibernate.version>
         <slf4j.version>1.7.26</slf4j.version>
         <aspectj.version>1.9.4</aspectj.version>
         <jodatime.version>2.10.4</jodatime.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jtaVersion>1.1</jtaVersion>
-        <servletVersion>3.1.0</servletVersion>
-        <springSecurityVersion>5.1.6.RELEASE</springSecurityVersion>
+        <springSecurityVersion>5.7.2</springSecurityVersion>
         <jacksonVersion>2.9.9.3</jacksonVersion>
         <xStreamVersion>1.4.11.1</xStreamVersion>
         <log4jVersion>1.2.17</log4jVersion>
-        <jstlVersion>1.2</jstlVersion>
         <jstlStandardVersion>1.1.2</jstlStandardVersion>
         <jwt.version>1.0.10.RELEASE</jwt.version>
     </properties>
@@ -50,7 +48,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>2.1.10.RELEASE</version>
+            <version>2.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -123,35 +121,49 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <!--  additions rk -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webflux</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-            <version>${jtaVersion}</version>
-        </dependency>
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>4.0.4</version>
+			<scope>provided</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${servletVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>${jstlVersion}</version>
-        </dependency>
+		<dependency>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+			<version>1.2.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-client</artifactId>
+			<version>${springSecurityVersion}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-jose</artifactId>
+			<version>${springSecurityVersion}</version>
+		</dependency>
+
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
@@ -174,32 +186,6 @@
             <version>${springSecurityVersion}</version>
         </dependency>
 
-        <!-- oAuth -->
-        <dependency>
-            <groupId>org.springframework.security.oauth</groupId>
-            <artifactId>spring-security-oauth2</artifactId>
-            <version>2.3.6.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-openid</artifactId>
-            <version>${springSecurityVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-jwt</artifactId>
-            <version>${jwt.version}</version>
-        </dependency>
-        <!-- end oAuth -->
-
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
@@ -209,7 +195,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.199</version>
+            <version>2.1.212</version>
         </dependency>
 
         <dependency>
@@ -251,8 +237,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>

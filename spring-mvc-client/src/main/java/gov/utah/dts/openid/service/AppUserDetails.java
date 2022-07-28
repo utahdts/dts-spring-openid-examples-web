@@ -1,24 +1,28 @@
 package gov.utah.dts.openid.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import gov.utah.dts.openid.model.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 
 /**
  * The Class AppUserDetails.
  */
-public class AppUserDetails extends User {
+public class AppUserDetails extends DefaultOidcUser {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 111113L;
 
 	/** The name. */
 	private String name;
-	
+
 	/** The id. */
 	private Long id;
 
@@ -30,7 +34,7 @@ public class AppUserDetails extends User {
 	private String umdEmail;
 
 	private OAuth2AccessToken accessToken;
-	
+
 	/**
 	 * Instantiates a new app user details.
 	 *
@@ -39,14 +43,24 @@ public class AppUserDetails extends User {
 	 * @param member the db member
 	 * @param authList the authorities
 	 */
-	public AppUserDetails(Map<String, String> openIdMap, OAuth2AccessToken accessToken, Member member, List<GrantedAuthority> authList) {
-		super(member.getEmail(), "", true, true, true,true, authList);
+	/**
+	 * Instantiates a new app user details.
+	 *
+	 * @param member the db member record
+	 * @param idToken the accessToken
+	 * @param userInfo contains openId claims map
+	 * @param authorities the roles the user has
+	 */
+	public AppUserDetails(Member member,
+						  OidcIdToken idToken,
+						  OidcUserInfo userInfo,
+						  Collection<? extends GrantedAuthority> authorities) {
+		super(authorities, idToken, userInfo);
 		this.name = member.getName();
 		this.id = member.getId();
 		this.admin = member.isAdmin();
-		this.umdUserId = openIdMap.get("uid");
-		this.umdEmail = openIdMap.get("email");
-		this.accessToken = accessToken;
+		this.umdUserId = (String) userInfo.getClaims().get("uid");
+		this.umdEmail = member.getEmail();
 	}
 
 	/**
@@ -85,25 +99,6 @@ public class AppUserDetails extends User {
 		this.id = id;
 	}
 
-	/**
-	 * Gets the admin.
-	 *
-	 * @return the admin
-	 */
-	public Boolean getAdmin() {
-		return admin;
-	}
-
-	/**
-	 * Sets the admin.
-	 *
-	 * @param admin the new admin
-	 */
-	public void setAdmin(Boolean admin) {
-		this.admin = admin;
-	}
-
-
 	public String getUmdUserId() {
 		return umdUserId;
 	}
@@ -112,7 +107,4 @@ public class AppUserDetails extends User {
 		return umdEmail;
 	}
 
-	public OAuth2AccessToken getAccessToken() {
-		return accessToken;
-	}
 }

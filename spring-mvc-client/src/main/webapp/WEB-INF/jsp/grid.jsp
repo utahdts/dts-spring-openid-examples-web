@@ -41,7 +41,7 @@
 
 <body>
 
-<!-- 
+<!--
 				<sec:authorize access="hasRole('ROLE_AGENCY')">LFA ONLY</sec:authorize>
 				<sec:authorize access="hasRole('ROLE_LFA')">LFA ONLY</sec:authorize>
 				<sec:authorize access="hasRole('ROLE_ADMIN')">ADMIN ONLY</sec:authorize>
@@ -50,7 +50,8 @@
 
 <div class="navbar">
     <ul class="list">
-        <li>Email: ${user.username}</li>
+        <li>Email: ${user.umdEmail}</li>
+        <li>UID: ${user.umdUserId}</li>
         <li>Role: ${user.authorities}</li>
         <li><a href='logout.html'>Sign Out</a></li>
     </ul>
