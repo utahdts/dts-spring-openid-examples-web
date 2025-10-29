@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:openid.properties")
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
 	private Environment env;
 
@@ -41,23 +42,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		this.env = env;
 	}
 
-	@Override
-	public void configure(WebSecurity web) {
-		web
-			.ignoring()
-			.antMatchers("/error.htm", "/css/**", "/ico/**", "/img/**", "/images/**", "/js/**", "/js/vendor/**", "/canary/**", "/403.html");
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return (web) -> web.ignoring()
+				.requestMatchers("/error.htm", "/css/**", "/ico/**", "/img/**", "/images/**", "/js/**", "/js/vendor/**", "/canary/**", "/403.html");
 	}
 
-	@Override
 	/**
-	 *
 	 * Using hasAnyRole should not start with "ROLE_" as this is automatically inserted.  When the db role name starts with "ROLE_"
 	 * Using hasAnyAuthority should match exactly the role name in the db.
 	 */
-	public void configure(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-				.authorizeRequests(authorize -> authorize
-						.antMatchers("/**").hasAnyAuthority(Constants.ROLE_AGENCY_STAFF, Constants.ROLE_USER, Constants.ROLE_ADMIN)
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers("/**").hasAnyAuthority(Constants.ROLE_AGENCY_STAFF, Constants.ROLE_USER, Constants.ROLE_ADMIN)
 				)
 				.oauth2Login()
 //				.loginPage("/oauth2/authorization/utahid")
@@ -65,6 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.userInfoEndpoint()
 				.oidcUserService(customOidcUserService)
 				;
+		return http.build();
 	}
 
 	@Bean

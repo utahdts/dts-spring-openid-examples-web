@@ -3,16 +3,17 @@ package gov.utah.dts.openid.config;
 import gov.utah.dts.openid.security.CustomAuthenticationConverter;
 import gov.utah.dts.openid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -24,7 +25,7 @@ import static org.springframework.http.HttpMethod.GET;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
 	private UserService userService;
 
@@ -33,32 +34,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		this.userService = userService;
 	}
 
-	@Override
-	public void configure(WebSecurity webSecurity) throws Exception {
-		webSecurity
-				.ignoring()
-				.antMatchers("/resources/**", "/canary/**", "/error", "/403.html", "/version.txt");
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return (web) -> web.ignoring()
+			.requestMatchers("/resources/**", "/canary/**", "/error", "/403.html", "/version.txt");
 	}
 
-	@Override
-	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+		http
 				.cors()
 				.and()
 				.headers().frameOptions().disable()
 				.and()
 				.csrf().disable()
-				.authorizeRequests()
+				.authorizeHttpRequests(authorize -> authorize
 				/* Most restrictive first */
-				.antMatchers(GET, "/userInfoAdmin").hasAnyAuthority("ROLE_ADMIN")
-				.antMatchers(GET, "/userInfo").authenticated()
-				.antMatchers(GET, "/").permitAll()
-				.and()
+				.requestMatchers(GET, "/userInfoAdmin").hasAnyAuthority("ROLE_ADMIN")
+				.requestMatchers(GET, "/userInfo").authenticated()
+				.requestMatchers(GET, "/").permitAll()
+				)
 				.oauth2ResourceServer()
 				.jwt()
-				.jwtAuthenticationConverter(authenticationConverter())
+				.jwtAuthenticationConverter(authenticationConverter()
+				);
 
-		;
+		return http.build();
 	}
 
 	private Converter<Jwt, AbstractAuthenticationToken> authenticationConverter() {

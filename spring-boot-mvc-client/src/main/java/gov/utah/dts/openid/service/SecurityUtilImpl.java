@@ -5,7 +5,7 @@ import gov.utah.dts.openid.model.Audit;
 
 import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class SecurityUtilImpl implements SecurityUtil{
 
 	 
 	 /* (non-Javadoc)
- 	 * @see gov.utah.lfa.service.SecurityUtil#logout(javax.servlet.http.HttpServletRequest)
+ 	 * @see gov.utah.lfa.service.SecurityUtil#logout(jakarta.servlet.http.HttpServletRequest)
  	 */
  	public void logout(HttpServletRequest request){
 		 	AppUserDetails user = getActiveUser();

@@ -1,56 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true" scanPeriod="30 seconds">
 
-    <property name="DEV_HOME" value="${catalina.home}/logs"/>
+    <!-- Use Spring Boot's default logging properties -->
+    <property name="LOG_PATH" value="${LOG_PATH:-${catalina.home:-.}/logs}"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss:SSS} | %5p | %c:%L - %m%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} | %5p | %c:%L - %m%n</pattern>
-        </layout>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
     </appender>
 
     <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${DEV_HOME}/catalina_spring-boot-mvc-client.log</file>
+        <file>${LOG_PATH}/catalina_spring-boot-mvc-client.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} | %5p | %c:%L - %m%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${DEV_HOME}/archived/debug.%d{yyyy-MM-dd}.%i.spring-boot-mvc-client.log</fileNamePattern>
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/archived/app.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
     <appender name="HIBERNATE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${DEV_HOME}/catalina_spring-boot-mvc-client-hibernate.log</file>
+        <file>${LOG_PATH}/hibernate.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} | %5p | %c:%L - %m%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${DEV_HOME}/archived/debug.%d{yyyy-MM-dd}.%i.hibernate.log</fileNamePattern>
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/archived/hibernate.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- keep 7 days' worth of history -->
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>200MB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
     <logger name="ch.qos.logback" level="ERROR"/>
     <logger name="org.springframework" level="INFO"/>
     <logger name="org.hibernate.validator" level="INFO"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
     <logger name="com.zaxxer.hikari" level="INFO"/>
 
-    <logger name="org.hibernate" level="debug" additivity="false">
+    <logger name="org.hibernate" level="DEBUG" additivity="false">
         <appender-ref ref="HIBERNATE"/>
     </logger>
 
-    <root level="debug">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="APP"/>
-    </root>
+    <!-- Default profile (dev) -->
+    <springProfile name="!prod">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- Production profile -->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="APP"/>
+        </root>
+    </springProfile>
 
 </configuration>

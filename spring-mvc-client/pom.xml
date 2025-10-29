@@ -27,21 +27,18 @@
     </developers>
 
     <properties>
-        <spring.version>5.3.22</spring.version>
-        <jpa.version>1.0.2.Final</jpa.version>
-        <junit.version>4.12</junit.version>
-        <hibernate.version>5.6.9.Final</hibernate.version>
-        <slf4j.version>1.7.26</slf4j.version>
-        <aspectj.version>1.9.4</aspectj.version>
-        <jodatime.version>2.10.4</jodatime.version>
+        <spring.version>6.2.12</spring.version>
+        <junit.version>4.13.2</junit.version>
+        <hibernate.version>6.6.34.Final</hibernate.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <aspectj.version>1.9.24</aspectj.version>
+        <jodatime.version>2.14.0</jodatime.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jtaVersion>1.1</jtaVersion>
-        <springSecurityVersion>5.7.2</springSecurityVersion>
-        <jacksonVersion>2.9.9.3</jacksonVersion>
-        <xStreamVersion>1.4.11.1</xStreamVersion>
+        <springSecurityVersion>6.5.6</springSecurityVersion>
+        <jacksonVersion>2.20.0</jacksonVersion>
+        <xStreamVersion>1.4.21</xStreamVersion>
         <log4jVersion>1.2.17</log4jVersion>
         <jstlStandardVersion>1.1.2</jstlStandardVersion>
-        <jwt.version>1.0.10.RELEASE</jwt.version>
     </properties>
 
     <dependencies>
@@ -82,11 +79,11 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
-            <version>${jpa.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -140,9 +137,9 @@
         </dependency>
 
 		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>4.0.4</version>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>10.1.48</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -224,7 +221,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>1.18.42</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -235,7 +232,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.1</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>
@@ -244,7 +241,7 @@
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.6</version>
+                <version>4.9.10</version>
                 <configuration>
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
                     <dateFormat>MM.dd.yyyy '@' HH:mm:ss z</dateFormat>
@@ -258,7 +255,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.4</version>
+                <version>0.8.14</version>
                 <executions>
                     <execution>
                         <goals>
@@ -277,7 +274,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.5.4</version>
                 <configuration>
                     <includes>
                         <include>**/*.java</include>

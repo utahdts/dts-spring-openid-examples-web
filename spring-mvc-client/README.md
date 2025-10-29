@@ -1,6 +1,6 @@
 # OpenId Connect examples
 
-## Spring 5 MVC Client
+## Spring 6 MVC Client
 An OIDC client application.
 
 Uses EnableOAuth2Client annotation provided by Spring Security OAuth2

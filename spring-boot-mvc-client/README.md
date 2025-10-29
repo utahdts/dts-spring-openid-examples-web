@@ -1,6 +1,6 @@
 # OpenId Connect examples
 
-## Spring Boot 2.5.x MVC Client
+## Spring Boot 3.5.x MVC Client
 
 ### Release Notes
 

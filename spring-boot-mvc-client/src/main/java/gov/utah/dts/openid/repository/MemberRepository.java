@@ -44,9 +44,9 @@ public interface MemberRepository extends CrudRepository<Member, Long> {
 //	@Query("select m from Member m where m.id=:id ")
 //	Member findById(@Param("id") Long id);
 
-	@Query("select m from Member m where m.inactive = 0")
+	@Query("select m from Member m where m.inactive = false")
 	List<Member> getActiveMembers();
 
-	@Query("select m from Member m where m.inactive = 1")
+	@Query("select m from Member m where m.inactive = true")
 	List<Member> getInactiveMembers();
 }
