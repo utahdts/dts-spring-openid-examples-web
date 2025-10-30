@@ -9,10 +9,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class StartBootApplicationTests {
+
+class StartBootApplicationTests {
 
 	@Test
-	public void contextLoads() {
+
+	void contextLoads() { // default implementation ignored
 	}
 
 }

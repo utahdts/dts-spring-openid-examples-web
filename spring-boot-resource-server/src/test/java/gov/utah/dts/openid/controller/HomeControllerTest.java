@@ -19,13 +19,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class HomeControllerTest {
+class HomeControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
 
 	@Test
-	public void getHello() throws Exception {
+	void getHello() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("App version")));

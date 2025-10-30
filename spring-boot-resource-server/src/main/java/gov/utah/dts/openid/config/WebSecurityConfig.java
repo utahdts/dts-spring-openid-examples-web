@@ -2,20 +2,22 @@ package gov.utah.dts.openid.config;
 
 import gov.utah.dts.openid.security.CustomAuthenticationConverter;
 import gov.utah.dts.openid.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Collections;
@@ -24,19 +26,18 @@ import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class WebSecurityConfig {
 
-	private UserService userService;
+	private final UserService userService;
 
-	@Autowired
 	public WebSecurityConfig(UserService userService) {
 		this.userService = userService;
 	}
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring()
+		return web -> web.ignoring()
 			.requestMatchers("/resources/**", "/canary/**", "/error", "/403.html", "/version.txt");
 	}
 
@@ -44,21 +45,18 @@ public class WebSecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		http
-				.cors()
-				.and()
-				.headers().frameOptions().disable()
-				.and()
-				.csrf().disable()
-				.authorizeHttpRequests(authorize -> authorize
+			.authorizeHttpRequests(authorize -> authorize
 				/* Most restrictive first */
 				.requestMatchers(GET, "/userInfoAdmin").hasAnyAuthority("ROLE_ADMIN")
 				.requestMatchers(GET, "/userInfo").authenticated()
 				.requestMatchers(GET, "/").permitAll()
-				)
-				.oauth2ResourceServer()
-				.jwt()
-				.jwtAuthenticationConverter(authenticationConverter()
-				);
+			)
+			.oauth2ResourceServer(oauth2 -> oauth2
+				.jwt((jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())))
+			)
+			.cors(Customizer.withDefaults())
+			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+			.csrf(AbstractHttpConfigurer::disable);
 
 		return http.build();
 	}
@@ -78,6 +76,11 @@ public class WebSecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 
 }

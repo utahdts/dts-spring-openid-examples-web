@@ -1,8 +1,10 @@
 package gov.utah.dts.openid.controller;
 
 import gov.utah.dts.openid.security.OpenIdConnectUserDetails;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class HomeController {
 
 	@Value("${version}")
@@ -26,14 +29,15 @@ public class HomeController {
 	@Value("${security.oauth2.resource.user-info-uri}")
 	private String userInfoUri;
 
+	private final RestTemplate restTemplate;
+
 	@RequestMapping("/")
 	public String index() {
 
 		return "App version: " + version;
 	}
 
-	@RequestMapping(value = "/version.txt", method = RequestMethod.GET)
-	@ResponseBody
+	@GetMapping(value = "/version.txt", produces = "text/plain;charset=UTF-8")
 	String versionEndpoint() {
 		return version;
 	}
@@ -58,7 +62,7 @@ public class HomeController {
 		log.info("Authentication Principal: {}", userDetails);
 		final Map<String, Object> initialClaims = userDetails.getJwt().getClaims();
 
-		final Map openAmUserInfo = getUserInfo(userDetails);
+		final Map<String, Object> openAmUserInfo = getUserInfoFromEndpoint(userDetails);
 		log.info("UserInfo endpoint response: {}", openAmUserInfo);
 
 		return "<h2>Secured Homepage</h2>User Id: " + userDetails.getUsername()
@@ -72,12 +76,11 @@ public class HomeController {
 				;
 	}
 
-	private Map getUserInfo(OpenIdConnectUserDetails userDetails) {
-		final RestTemplate restTemplate = new RestTemplate();
+	private Map<String, Object> getUserInfoFromEndpoint(OpenIdConnectUserDetails userDetails) {
 		final HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("Authorization", "Bearer " + userDetails.getJwt().getTokenValue());
 		final HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
-		final ResponseEntity<Map> userInfoResponseEntity = restTemplate.exchange(userInfoUri, HttpMethod.GET, httpEntity, Map.class);
+		final ResponseEntity<Map<String, Object>> userInfoResponseEntity = restTemplate.exchange(userInfoUri, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<>() {});
 		return userInfoResponseEntity.getBody();
 	}
 }

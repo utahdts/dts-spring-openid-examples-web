@@ -2,17 +2,17 @@ package gov.utah.dts.openid.service;
 
 import gov.utah.dts.openid.mapper.UserMapper;
 import gov.utah.dts.openid.model.DatabaseUser;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	@Autowired
-    private UserMapper userDao;
+    private final UserMapper userMapper;
 
 	@Override
 	public DatabaseUser findByUid(String uid) {
-		return userDao.getUserByUid(uid);
+		return userMapper.getUserByUid(uid);
 	}
 }

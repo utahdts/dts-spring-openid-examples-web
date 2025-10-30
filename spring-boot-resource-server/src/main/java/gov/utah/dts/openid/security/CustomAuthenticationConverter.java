@@ -10,16 +10,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import static java.util.Optional.empty;
 
 @Slf4j
 public class CustomAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-	private UserService userService;
+	private final UserService userService;
 
 	public CustomAuthenticationConverter(UserService userService) {
 		this.userService = userService;
